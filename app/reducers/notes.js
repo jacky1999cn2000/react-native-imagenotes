@@ -2,10 +2,14 @@
 
 import {fromJS, List, Map} from 'immutable';
 
-const notes = (state = List(), action) => {
+const notes = (state = Map({notes:List(),startIndex:0,hasMore:true}), action) => {
   switch (action.type) {
     case 'UPDATE_NOTES':
-      return state.concat(fromJS(action.notes));
+      state = state.set('startIndex', action.notes.startIndex);
+      state = state.set('hasMore', action.notes.hasMore);
+      //state = state.set('notes', state.get('notes').concat(fromJS(action.notes.notes)));
+      state = state.set('notes', state.get('notes').toSet().union(fromJS(action.notes.notes).toSet()).toList().sort((a,b) => {if(a.get('id') > b.get('id')){return 1;}else{return -1;}}));
+      return state;
     case 'ADD_NOTE':
       return state.push(note(undefined, action));
     case 'LIKE_NOTE':
