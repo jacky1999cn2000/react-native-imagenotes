@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
-// import { toggleTodo } from '../actions'
+import { getNotes } from '../actions'
 import {fromJS, is} from 'immutable'
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -56,10 +56,14 @@ class Feed extends React.Component {
     })
   }
 
+  componentDidMount(){
+    this.props.dispatch(getNotes());
+  }
+
   render(){
     return (
       <ListView style={styles.list}
-        dataSource={this.ds.cloneWithRows(dummyData.toArray())}
+        dataSource={this.ds.cloneWithRows(this.props.notes.toArray())}
         enableEmptySections={true}
         renderRow={this.onRenderRow} />
     )
@@ -113,6 +117,15 @@ const styles = StyleSheet.create({
     }
 })
 
-Feed = connect()(Feed)
+Feed = connect(
+  state => {
+    console.log('state',state);
+   return { notes: state.notes };
+ },
+ dispatch => {
+   return { dispatch }
+ }
+)(Feed)
+
 
 export default Feed
