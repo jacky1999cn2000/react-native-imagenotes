@@ -2,10 +2,10 @@
 
 import {fromJS, List, Map} from 'immutable';
 
-const notes = (state=List(), action) => {
+const notes = (state = List(), action) => {
   switch (action.type) {
-    case 'LOAD_NOTES':
-      return fromJS(action.notes);
+    case 'UPDATE_NOTES':
+      return state.concat(fromJS(action.notes));
     case 'ADD_NOTE':
       return state.push(note(undefined, action));
     case 'LIKE_NOTE':

@@ -17,36 +17,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const coffeeIcon = (<Icon name="coffee" size={10} color="black" />)
 const bookmarkIcon = (<Icon name="bookmark" size={10} color="black" />)
 
-let dummyData = fromJS(
-  [
-    {
-      id: '1',
-      title: 'title1',
-      completed: true
-    },
-    {
-      id: '2',
-      title: 'title2',
-      completed: true
-    },
-    {
-      id: '3',
-      title: 'title3',
-      completed: true
-    },
-    {
-      id: '4',
-      title: 'title4',
-      completed: true
-    },
-    {
-      id: '5',
-      title: 'title5',
-      completed: true
-    },
-  ]
-);
-
 class Feed extends React.Component {
   constructor(){
     super(...arguments);
@@ -57,18 +27,28 @@ class Feed extends React.Component {
   }
 
   componentDidMount(){
-    this.props.dispatch(getNotes());
+    this.props.dispatch(getNotes(this.props.data.startIndex));
   }
 
   render(){
     return (
       <ListView style={styles.list}
-        dataSource={this.ds.cloneWithRows(this.props.notes.toArray())}
+        dataSource={this.ds.cloneWithRows(this.props.data.notes.toArray())}
         enableEmptySections={true}
-        renderRow={this.onRenderRow} />
+        renderRow={this.onRenderRow}
+         />
     )
   }
 
+  // onEndReached={() => {
+  //   console.log('onEndReached');
+  //   console.log('hasMore', this.props.notes.get('hasMore'));
+  //   console.log('startIndex ',this.props.notes.get('startIndex'));
+  //   if(this.props.notes.get('hasMore')){
+  //     this.props.dispatch(getNotes(this.props.data.startIndex));
+  //   }
+  // }}
+  
   onRenderRow = (rowData, sectionID, rowID) => {
     let textStyle = {
       textDecorationLine: rowData.get('completed') ? 'line-through' : 'none'
@@ -120,7 +100,7 @@ const styles = StyleSheet.create({
 Feed = connect(
   state => {
     console.log('state',state);
-   return { notes: state.notes };
+   return { data: state };
  },
  dispatch => {
    return { dispatch }

@@ -41,8 +41,6 @@ class Route extends React.Component {
   }
 
   renderScene = (route, navigator) => {
-    console.log('route.name',route.name);
-    console.log('ROUTE[route.name]',ROUTE[route.name]);
     let Component = ROUTE[route.name];
     return <Component route={route} navigator={navigator} />;
   }
