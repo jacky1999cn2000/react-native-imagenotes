@@ -62,6 +62,7 @@ class Feed extends React.Component {
         </View>
         <ListView style={styles.list}
           dataSource={this.ds.cloneWithRows(this.props.notes.get('notes').toArray())}
+          automaticallyAdjustContentInsets={false}
           enableEmptySections={true}
           renderRow={this.onRenderRow}
           contentContainerStyle={{alignItems: 'stretch'}}
