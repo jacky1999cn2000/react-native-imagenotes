@@ -47,7 +47,7 @@ class Feed extends React.Component {
     return (
       <TouchableHighlight
         underlayColor="gray"
-        onPress={() => this.props.navigator.push({name: 'detail'})}
+        onPress={() => this.props.navigator.push({name: 'detail',data:rowData})}
       >
         <View style={styles.row}>
           <View style={styles.title}>
