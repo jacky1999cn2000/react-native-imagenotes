@@ -18,6 +18,27 @@ export const updateNotes = (notes) => {
   }
 }
 
+export const updateRefreshNotes = (notes) => {
+  return {
+    type: TYPES.REFRESH_NOTES,
+    notes
+  }
+}
+
+export function refreshNotes(){
+  return function(dispatch){
+    return fetch('http://192.168.99.100:3000/notes?startIndex=0')
+    .then(response => response.json())
+    .then(json => {
+      //console.log('json ',json);
+      dispatch(updateRefreshNotes(json));
+    })
+    .catch(err => {
+      console.log('err: ',err);
+    });
+  }
+}
+
 export function getNotes(startIndex){
   return function(dispatch){
     return fetch('http://192.168.99.100:3000/notes' + '?startIndex=' + startIndex)

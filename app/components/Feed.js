@@ -6,11 +6,12 @@ import {
   Text,
   View,
   TouchableHighlight,
+  RefreshControl,
   ListView
 } from 'react-native';
 
 import { connect } from 'react-redux'
-import { getNotes } from '../actions'
+import { getNotes, refreshNotes } from '../actions'
 import {fromJS, is} from 'immutable'
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -22,7 +23,10 @@ class Feed extends React.Component {
     super(...arguments);
     this.ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => !is(r1, r2)
-    })
+    });
+    this.state ={
+      isRefreshing: false,
+    }
   }
 
   componentDidMount(){
@@ -55,12 +59,35 @@ class Feed extends React.Component {
     )
   }
 
+  _onRefresh = () => {
+    this.setState({isRefreshing: true});
+    // fetchData().then(() => {
+    //   this.setState({isRefreshing: false});
+    // });
+    console.log('---_onRefresh and make call---');
+    this.props.dispatch(refreshNotes());
+    setTimeout(() => {
+      this.setState({isRefreshing: false});
+    }, 5000);
+  }
+
   render(){
     return (
       <View style={styles.container}>
         <View style={styles.header}>
         </View>
         <ListView style={styles.list}
+        refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this._onRefresh}
+              tintColor="#ff0000"
+              title="刷新中..."
+              titleColor="gray"
+              colors={['#ff0000', '#00ff00', '#0000ff']}
+              progressBackgroundColor="#ffff00"
+            />
+          }
           dataSource={this.ds.cloneWithRows(this.props.notes.get('notes').toArray())}
           automaticallyAdjustContentInsets={false}
           enableEmptySections={true}
