@@ -61,7 +61,7 @@ class Signin extends React.Component {
                 underlayColor="white"
                 onPress={() => {
                   console.log('signin');
-                  this.props.navigator.push({name:'app'})
+                  this.props.navigator.resetTo({name:'app'})
                 }}
             >
                 <View style={styles.signin}>
