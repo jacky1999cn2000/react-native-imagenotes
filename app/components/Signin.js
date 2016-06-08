@@ -8,7 +8,9 @@ import {
   TextInput,
   TouchableHighlight,
   Image,
-  Dimensions
+  Dimensions,
+  AsyncStorage,
+  ActivityIndicatorIOS
 } from 'react-native';
 
 import {fromJS, is} from 'immutable';
@@ -20,11 +22,30 @@ class Signin extends React.Component {
     super(...arguments);
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      isLoading: false
     }
+  }
+  componentWillMount(){
+    console.log('componentWillMount');
+    //use 'imagenotes' to skip login
+    AsyncStorage.getItem('imagenotess').then((value) => {
+        if(value){
+          console.log('here');
+          this.props.navigator.resetTo({name:'app'});
+        }
+    }).done();
   }
 
   render(){
+    console.log('render');
+
+    var spinner = this.state.isLoading ?
+            ( <ActivityIndicatorIOS
+                hidden='true'
+                size='large'/> ) :
+            ( <View/>);
+
     return (
         <View style={styles.container}>
             <Image style={styles.bg} source={{uri: 'http://i.imgur.com/xlQ56UK.jpg'}} />
@@ -57,17 +78,27 @@ class Signin extends React.Component {
                     <Text style={styles.greyFont}>Forgot Password</Text>
                 </View>
             </View>
+            <View style={styles.spinner}>
+              {spinner}
+            </View>
             <TouchableHighlight
                 underlayColor="white"
                 onPress={() => {
-                  console.log('signin');
-                  this.props.navigator.resetTo({name:'app'})
+                  console.log('signin start');
+                  this.setState({isLoading: true});
+                  setTimeout(() => {
+                    AsyncStorage.setItem('imagenotes', 'user information');
+                    this.props.navigator.resetTo({name:'app'});
+                    console.log('signin done');
+                  }, 3000);
+                  console.log('signin in progress');
                 }}
             >
                 <View style={styles.signin}>
                   <Text style={styles.whiteFont}>Sign In</Text>
                 </View>
             </TouchableHighlight>
+
             <View style={styles.signup}>
                 <Text style={styles.greyFont}>Don't have an account?</Text>
                 <TouchableHighlight
@@ -154,6 +185,12 @@ const styles = StyleSheet.create({
     },
     whiteFont: {
       color: '#FFF'
+    },
+    spinner: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 36,
+      marginBottom: 10
     }
 })
 

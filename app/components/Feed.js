@@ -9,7 +9,8 @@ import {
   RefreshControl,
   ListView,
   Modal,
-  Picker
+  Picker,
+  ActivityIndicatorIOS
 } from 'react-native';
 
 import { connect } from 'react-redux'
@@ -29,14 +30,17 @@ class Feed extends React.Component {
     this.state ={
       isRefreshing: false,
       animationType: 'slide',
-      modalVisible: true,
+      modalVisible: false,
       transparent: true,
       language: '1'
     }
   }
 
   componentDidMount(){
-    this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
+    setTimeout(() => {
+      this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
+    }, 3000);
+
   }
 
   onRenderRow = (rowData, sectionID, rowID) => {
