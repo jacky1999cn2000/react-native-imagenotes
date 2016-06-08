@@ -7,7 +7,9 @@ import {
   View,
   TouchableHighlight,
   RefreshControl,
-  ListView
+  ListView,
+  Modal,
+  Picker
 } from 'react-native';
 
 import { connect } from 'react-redux'
@@ -26,6 +28,10 @@ class Feed extends React.Component {
     });
     this.state ={
       isRefreshing: false,
+      animationType: 'slide',
+      modalVisible: true,
+      transparent: true,
+      language: '1'
     }
   }
 
@@ -71,9 +77,57 @@ class Feed extends React.Component {
     }, 5000);
   }
 
+  _setModalVisible = (visible) => {
+    this.setState({modalVisible: visible});
+  }
+
   render(){
     return (
       <View style={styles.container}>
+
+
+      <Modal
+        animationType={this.state.animationType}
+        transparent={this.state.transparent}
+        visible={this.state.modalVisible}
+        onRequestClose={() => {this._setModalVisible(false)}}
+        >
+        <View style={[styles.container, {padding: 20, justifyContent: 'center',backgroundColor:'rgba(0, 0, 0, 0.4)'}]}>
+          <View style={[{borderRadius: 10},{justifyContent: 'center',backgroundColor: '#fff', padding: 20}]}>
+            <Text style={{textAlign: 'center'}}>
+              话题：
+            </Text>
+            <Picker
+              selectedValue={this.state.language}
+              onValueChange={(lang) => this.setState({language: lang})}>
+              <Picker.Item label="1" value="1" />
+              <Picker.Item label="2" value="2" />
+              <Picker.Item label="3" value="3" />
+              <Picker.Item label="4" value="4" />
+              <Picker.Item label="5" value="5" />
+              <Picker.Item label="6" value="6" />
+              <Picker.Item label="7" value="7" />
+              <Picker.Item label="8" value="8" />
+              <Picker.Item label="9" value="9" />
+              <Picker.Item label="10" value="10" />
+              <Picker.Item label="11" value="11" />
+              <Picker.Item label="12" value="12" />
+              <Picker.Item label="13" value="13" />
+              <Picker.Item label="14" value="14" />
+              <Picker.Item label="15" value="15" />
+              <Picker.Item label="16" value="16" />
+            </Picker>
+
+            <TouchableHighlight
+              onPress={() => {this._setModalVisible(false)}}
+              underlayColor="#a9d9d4">
+                <Text >关闭</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Modal>
+
+
         <View style={styles.header}>
         </View>
         <ListView style={styles.list}
