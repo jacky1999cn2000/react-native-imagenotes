@@ -37,9 +37,11 @@ class Feed extends React.Component {
   }
 
   componentDidMount(){
-    setTimeout(() => {
-      this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
-    }, 3000);
+    this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
+    //imatate loading
+    // setTimeout(() => {
+    //   this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
+    // }, 300);
 
   }
 
@@ -78,7 +80,7 @@ class Feed extends React.Component {
     this.props.dispatch(refreshNotes());
     setTimeout(() => {
       this.setState({isRefreshing: false});
-    }, 5000);
+    }, 300);
   }
 
   _setModalVisible = (visible) => {
@@ -210,6 +212,7 @@ const styles = StyleSheet.create({
 
 Feed = connect(
   state => {
+   console.log('in Feed');
    console.log('state',state);
    return { notes: state.notes };
  },
