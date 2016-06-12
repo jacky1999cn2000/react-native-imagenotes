@@ -6,16 +6,19 @@ import {
   Text,
   View,
   TouchableHighlight,
+  TouchableOpacity,
   RefreshControl,
   ListView,
   Modal,
   Picker,
-  ActivityIndicatorIOS
+  ActivityIndicatorIOS,
+  TextInput
 } from 'react-native';
 
 import { connect } from 'react-redux'
 import { getNotes, refreshNotes } from '../actions'
 import {fromJS, is} from 'immutable'
+import BackButton from './BackButton'
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 const coffeeIcon = (<Icon name="coffee" size={10} color="black" />)
@@ -32,7 +35,16 @@ class Feed extends React.Component {
       animationType: 'slide',
       modalVisible: false,
       transparent: true,
-      language: '1'
+      language: '1',
+      searchText: '',
+      searchMode: false,
+      dummyData: [
+        {
+          id: 1,
+          text: 'dummyData',
+          title: 'dummyTitle'
+        }
+      ]
     }
   }
 
@@ -40,7 +52,7 @@ class Feed extends React.Component {
     this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
     //imatate loading
     // setTimeout(() => {
-    //   this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
+    //   //this.props.dispatch(getNotes(this.props.notes.get('startIndex')));
     // }, 300);
 
   }
@@ -87,7 +99,25 @@ class Feed extends React.Component {
     this.setState({modalVisible: visible});
   }
 
+  _createNew = () => {
+    //this.setState({modalVisible: true});
+    console.log('create new');
+  }
+
   render(){
+    let headerFlex = this.state.searchMode ? 0.22 : 0.11;
+    let listFlex = this.state.searchMode ? 0.78 : 0.89;
+    let searchView = this.state.searchMode ? (
+      <View style={{flex: 1}}>
+        <TouchableHighlight
+          onPress={() => {this.setState({modalVisible:true})}}
+          underlayColor="#a9d9d4">
+            <Text>Choose Topic</Text>
+        </TouchableHighlight>
+
+      </View>
+    ) : null;
+
     return (
       <View style={styles.container}>
 
@@ -127,16 +157,35 @@ class Feed extends React.Component {
             <TouchableHighlight
               onPress={() => {this._setModalVisible(false)}}
               underlayColor="#a9d9d4">
-                <Text >关闭</Text>
+                <Text>关闭</Text>
             </TouchableHighlight>
           </View>
         </View>
       </Modal>
 
 
-        <View style={styles.header}>
+        <View style={[styles.header,{flex:headerFlex}]}>
+          <View style={styles.searchWrapper}>
+            <TextInput placeholder="Search"
+              ref="searchText"
+              style={styles.search}
+              onFocus={() => {console.log('onFocus');this.refs.searchText.clear();this.setState({searchMode: true});}}
+              onEndEditing={() => {console.log('onEndEditing');console.log(this.state.searchText);this.setState({searchMode: false});}}
+              returnKeyType="search"
+              onChangeText={(text) => this.setState({searchText:text})}
+              value={this.state.searchText}/>
+            <TouchableHighlight
+              style={styles.createNew}
+              onPress={() => {this.props.navigator.push({name:'newItem'});}}
+              underlayColor="#a9d9d4">
+                <Text> + </Text>
+            </TouchableHighlight>
+          </View>
+
+            {searchView}
         </View>
-        <ListView style={styles.list}
+
+        <ListView style={[styles.list,{flex:listFlex}]}
         refreshControl={
             <RefreshControl
               refreshing={this.state.isRefreshing}
@@ -175,16 +224,37 @@ class Feed extends React.Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+      marginTop: 25,
       borderWidth: 2,
       borderColor: 'red'
     },
     header: {
-      flex: 1,
+      // flex: 0.1,
+      // justifyContent: 'center',
+      alignItems: 'stretch',
       borderWidth: 2,
       borderColor: 'blue'
     },
+    searchWrapper: {
+      flex: 1,
+      flexDirection: 'row'
+    },
+    search: {
+      flex: 0.9,
+      marginHorizontal: 5,
+      marginVertical: 10,
+      // height: 20,
+      // width: 60,
+      borderColor: 'gray',
+      borderWidth: 2
+    },
+    createNew: {
+      flex: 0.1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
     list: {
-      flex: 10,
+      // flex: 0.9,
       borderWidth: 2,
       borderColor: 'yellow',
       backgroundColor: 'white'
@@ -193,7 +263,8 @@ const styles = StyleSheet.create({
       flex: 1,
       borderTopWidth: 8,
       borderTopColor: '#D5DADE',
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      overflow: 'hidden'
     },
     icon: {
       width: 10,
