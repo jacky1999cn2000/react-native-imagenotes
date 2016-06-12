@@ -13,7 +13,7 @@ import {
   ActivityIndicatorIOS
 } from 'react-native';
 
-import {fromJS, is} from 'immutable';
+import {fromJS, is, Map} from 'immutable';
 
 const windowSize = Dimensions.get('window');
 
@@ -26,15 +26,21 @@ class Signin extends React.Component {
       isLoading: false
     }
   }
-  componentWillMount(){
+  async componentWillMount(){
     console.log('componentWillMount');
     //use 'imagenotes' to skip login
-    AsyncStorage.getItem('imagenotess').then((value) => {
-        if(value){
-          console.log('here');
-          this.props.navigator.resetTo({name:'app'});
-        }
-    }).done();
+    let userInfo = await AsyncStorage.getItem('imagenotes');
+    console.log('userInfo', userInfo);
+    if(userInfo){
+      this.props.navigator.resetTo({name:'app'});
+    }
+    //  AsyncStorage.getItem('imagenotes').then((value) => {
+    //     console.log('value',value);
+    //     if(value){
+    //       console.log('here');
+    //       this.props.navigator.resetTo({name:'app'});
+    //     }
+    // }).done();
   }
 
   render(){
@@ -87,7 +93,11 @@ class Signin extends React.Component {
                   console.log('signin start');
                   this.setState({isLoading: true});
                   setTimeout(() => {
-                    AsyncStorage.setItem('imagenotes', 'user information');
+                    let userInfo = JSON.stringify({
+                      name: 'jacky',
+                      role: 'superuser'
+                    });
+                    AsyncStorage.setItem('imagenotes', userInfo);
                     this.props.navigator.resetTo({name:'app'});
                     console.log('signin done');
                   }, 3000);

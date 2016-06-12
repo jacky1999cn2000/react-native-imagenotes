@@ -50,7 +50,8 @@ let styles = StyleSheet.create({
   },
   question:{
     flex: 1,
-    backgroundColor: 'red'
+    backgroundColor: 'red',
+    height: 200,
   },
   answers:{
     flex: 2,
