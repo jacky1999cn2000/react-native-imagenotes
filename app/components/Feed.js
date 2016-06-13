@@ -224,7 +224,7 @@ class Feed extends React.Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: 25,
+      marginTop: 64,
       borderWidth: 2,
       borderColor: 'red'
     },
