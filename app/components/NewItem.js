@@ -22,7 +22,8 @@ class NewItem extends React.Component {
     this.state = {
       title: '',
       content: '',
-      visibleHeight: 0
+      visibleHeight: 0,
+      avatarSource: ''
     };
   }
 
@@ -53,11 +54,70 @@ class NewItem extends React.Component {
     })
   }
 
+  selectImage = () => {
+    console.log('imageIcon pressed');
+    var ImagePicker = require('react-native-image-picker');
+
+    var options = {
+      title: '选择图片', // specify null or empty string to remove the title
+      cancelButtonTitle: 'Cancel',
+      takePhotoButtonTitle: '',//'Take Photo...', // specify null or empty string to remove this button
+      chooseFromLibraryButtonTitle: 'Choose from Library...', // specify null or empty string to remove this button
+      // customButtons: {
+      //   'Choose Photo from Facebook': 'fb', // [Button Text] : [String returned upon selection]
+      // },
+      cameraType: 'back', // 'front' or 'back'
+      mediaType: 'photo', // 'photo' or 'video'
+      videoQuality: 'high', // 'low', 'medium', or 'high'
+      durationLimit: 10, // video recording max time in seconds
+      maxWidth: 100, // photos only
+      maxHeight: 100, // photos only
+      aspectX: 2, // android only - aspectX:aspectY, the cropping image's ratio of width to height
+      aspectY: 1, // android only - aspectX:aspectY, the cropping image's ratio of width to height
+      quality: 0.2, // 0 to 1, photos only
+      angle: 0, // android only, photos only
+      allowsEditing: false, // Built in functionality to resize/reposition the image after selection
+      noData: false, // photos only - disables the base64 `data` field from being generated (greatly improves performance on large photos)
+      storageOptions: { // if this key is provided, the image will get saved in the documents directory on ios, and the pictures directory on android (rather than a temporary directory)
+        skipBackup: true, // ios only - image will NOT be backed up to icloud
+        path: 'images' // ios only - will save image at /Documents/images rather than the root
+      }
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+      else {
+        // You can display the image using either data:
+        //const source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+
+        // uri (on iOS)
+        const source = {uri: response.uri.replace('file://', ''), isStatic: true};
+        // uri (on android)
+        //const source = {uri: response.uri, isStatic: true};
+        console.log('source ',source);
+        
+        this.setState({
+          avatarSource: source
+        });
+      }
+    });
+  }
+
   render(){
     let bodyHeight = this.state.visibleHeight - 160;
     console.log('bodyHeight ',bodyHeight);
     let bodyPlaceHolder = `请输入问题描述:
-    
+
         您可以添加最多6张图片,如果这是一个针对某特定区域的问题,请添加地理位置信息`;
     return (
       <View style={styles.container}>
@@ -80,7 +140,7 @@ class NewItem extends React.Component {
             />
             <View style={styles.bench}>
               <TouchableOpacity
-                onPress={() => {console.log('imageIcon pressed');}}
+                onPress={this.selectImage}
               >
                 {imageIcon}
               </TouchableOpacity>
