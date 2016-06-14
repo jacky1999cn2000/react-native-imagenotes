@@ -10,8 +10,13 @@ import {
   DeviceEventEmitter,
   LayoutAnimation,
   TouchableOpacity,
-  Image
+  Image,
+  Alert
 } from 'react-native';
+
+var reactMixin = require('react-mixin');
+var EventEmitter = require('EventEmitter');
+var Subscribable = require('Subscribable');
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 const imageIcon = (<Icon name="image" size={20} color="black" />)
@@ -27,6 +32,34 @@ class NewItem extends React.Component {
       images: []
     };
   }
+
+  componentDidMount(){
+    this.addListenerOn(this.props.events, 'preview', this.preview);
+  }
+
+  preview = () => {
+    console.log('NewItem preview!');
+    //do some validation
+    if(this.state.title == ''){
+      Alert.alert(
+        'Title can not be empty',
+        'You must enter title',
+        [
+          // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+          // {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]
+      )
+    }else{
+      //navigate to preview page and submit there
+      //this.props.navigator.push({name: 'detail',data:rowData})
+      
+      //for simplicity sake, I'll try to submit here
+
+    }
+
+  }
+
 
   componentWillMount () {
     this.keyboardDidShowListener = DeviceEventEmitter.addListener('keyboardDidShow', this.keyboardDidShow)
@@ -114,10 +147,6 @@ class NewItem extends React.Component {
     });
   }
 
-  preview = () => {
-    console.log('preview!');
-  }
-
   render(){
     console.log('images ',this.state.images);
 
@@ -178,6 +207,7 @@ class NewItem extends React.Component {
   }
 
 }
+reactMixin(NewItem.prototype, Subscribable.Mixin);
 
 let styles = StyleSheet.create({
   container: {
