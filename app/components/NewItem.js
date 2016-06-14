@@ -73,8 +73,8 @@ class NewItem extends React.Component {
         keyPrefix: "upload/",
         bucket: "imagenotes",
         region: "us-west-2",
-        accessKey: "AKIAIPG6UFIXP6VS5GXQ",
-        secretKey: "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",
+        accessKey: "xxx",
+        secretKey: "xxx",
         successActionStatus: 201
       }
 
