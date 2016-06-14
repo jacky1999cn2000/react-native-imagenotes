@@ -18,6 +18,8 @@ var reactMixin = require('react-mixin');
 var EventEmitter = require('EventEmitter');
 var Subscribable = require('Subscribable');
 
+import { RNS3 } from 'react-native-aws3';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 const imageIcon = (<Icon name="image" size={20} color="black" />)
 const mapIcon = (<Icon name="map-pin" size={20} color="black" />)
@@ -34,10 +36,10 @@ class NewItem extends React.Component {
   }
 
   componentDidMount(){
-    this.addListenerOn(this.props.events, 'preview', this.preview);
+    this.addListenerOn(this.props.events, 'preview', this.preview.bind(this));
   }
 
-  preview = () => {
+  async preview(){
     console.log('NewItem preview!');
     //do some validation
     if(this.state.title == ''){
@@ -53,9 +55,46 @@ class NewItem extends React.Component {
     }else{
       //navigate to preview page and submit there
       //this.props.navigator.push({name: 'detail',data:rowData})
-      
-      //for simplicity sake, I'll try to submit here
 
+      //for simplicity sake, I'll try to submit here
+      console.log('images ',this.state.images);
+
+      let file = {
+        // `uri` can also be a file system path (i.e. file://)
+        //uri: "assets-library://asset/asset.PNG?id=655DBE66-8008-459C-9358-914E1FB532DD&ext=PNG",
+        uri: "file:///Users/jacky.zhao/Library/Developer/CoreSimulator/Devices/E99FE97E-E876-40E0-A393-1716CAF55C55/data/Containers/Data/Application/F368CC91-C212-4B0C-B684-FBD2BC260781/tmp/9CE12E87-526E-4E13-BABE-71035E4AC783.jpg",
+        name: "9CE12E87-526E-4E13-BABE-71035E4AC783.jpg",
+        type: "image/jpg"
+      }
+
+      //keyPrefix should be unique (uuid)
+      //this should be handled via reducer
+      let options = {
+        keyPrefix: "upload/",
+        bucket: "imagenotes",
+        region: "us-west-2",
+        accessKey: "AKIAIPG6UFIXP6VS5GXQ",
+        secretKey: "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",
+        successActionStatus: 201
+      }
+
+      let response = await RNS3.put(file, options);
+      console.log('response',response);
+      // RNS3.put(file, options).then(response => {
+      //   if (response.status !== 201)
+      //     throw new Error("Failed to upload image to S3");
+      //   console.log(response.body);
+      //   /**
+      //    * {
+      //    *   postResponse: {
+      //    *     bucket: "your-bucket",
+      //    *     etag : "9f620878e06d28774406017480a59fd4",
+      //    *     key: "uploads/image.png",
+      //    *     location: "https://your-bucket.s3.amazonaws.com/uploads%2Fimage.png"
+      //    *   }
+      //    * }
+      //    */
+      // });
     }
 
   }
@@ -104,18 +143,18 @@ class NewItem extends React.Component {
       mediaType: 'photo', // 'photo' or 'video'
       videoQuality: 'high', // 'low', 'medium', or 'high'
       durationLimit: 10, // video recording max time in seconds
-      maxWidth: 100, // photos only
-      maxHeight: 100, // photos only
+      maxWidth: 300, // photos only
+      maxHeight: 300, // photos only
       aspectX: 2, // android only - aspectX:aspectY, the cropping image's ratio of width to height
       aspectY: 1, // android only - aspectX:aspectY, the cropping image's ratio of width to height
-      quality: 0.2, // 0 to 1, photos only
+      quality: 1, // 0 to 1, photos only
       angle: 0, // android only, photos only
       allowsEditing: false, // Built in functionality to resize/reposition the image after selection
       noData: false, // photos only - disables the base64 `data` field from being generated (greatly improves performance on large photos)
-      storageOptions: { // if this key is provided, the image will get saved in the documents directory on ios, and the pictures directory on android (rather than a temporary directory)
-        skipBackup: true, // ios only - image will NOT be backed up to icloud
-        path: 'images' // ios only - will save image at /Documents/images rather than the root
-      }
+      // storageOptions: { // if this key is provided, the image will get saved in the documents directory on ios, and the pictures directory on android (rather than a temporary directory)
+      //   skipBackup: true, // ios only - image will NOT be backed up to icloud
+      //   path: 'images' // ios only - will save image at /Documents/images rather than the root
+      // }
     };
 
     ImagePicker.showImagePicker(options, (response) => {
@@ -176,6 +215,7 @@ class NewItem extends React.Component {
              placeholder="请输入问题标题..."
              style={[styles.text,styles.title,{height:40}]}
              onEndEditing={(text) => {this.refs.body.focus()}}
+             onChangeText={(text) => {this.setState({title:text})}}
            />
          </View>
          <View style={[styles.inputContainer]}>
