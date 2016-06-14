@@ -9,7 +9,8 @@ import {
   Dimensions,
   DeviceEventEmitter,
   LayoutAnimation,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -23,7 +24,7 @@ class NewItem extends React.Component {
       title: '',
       content: '',
       visibleHeight: 0,
-      avatarSource: ''
+      images: []
     };
   }
 
@@ -85,7 +86,7 @@ class NewItem extends React.Component {
     };
 
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
+      //console.log('Response = ', response);
 
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -104,21 +105,39 @@ class NewItem extends React.Component {
         const source = {uri: response.uri.replace('file://', ''), isStatic: true};
         // uri (on android)
         //const source = {uri: response.uri, isStatic: true};
-        console.log('source ',source);
-        
+        //console.log('source ',source);
+
         this.setState({
-          avatarSource: source
+          images: this.state.images.concat([source.uri])
         });
       }
     });
   }
 
+  preview = () => {
+    console.log('preview!');
+  }
+
   render(){
-    let bodyHeight = this.state.visibleHeight - 160;
+    console.log('images ',this.state.images);
+
+    //console.log('width', Dimensions.get('window').width);
+    let imageSize = (Dimensions.get('window').width - 20)/6; //20 is margins for container
+
+    let imageItems = this.state.images.length > 0 ? this.state.images.map((image) => {
+      console.log('image ',image);
+      return <Image key={image} style={{height:imageSize,width:imageSize}} source={{uri: image}}/>
+    }) : null;
+
+    console.log('imageItems',imageItems);
+
+    let bodyHeight = this.state.images.length > 0 ? this.state.visibleHeight - 160 - imageSize : this.state.visibleHeight - 160;
     console.log('bodyHeight ',bodyHeight);
+
     let bodyPlaceHolder = `请输入问题描述:
 
         您可以添加最多6张图片,如果这是一个针对某特定区域的问题,请添加地理位置信息`;
+
     return (
       <View style={styles.container}>
          <View style={[styles.inputContainer]}>
@@ -138,6 +157,9 @@ class NewItem extends React.Component {
              style={[styles.text,{height:bodyHeight}]}
              textAlignVertical="top"
             />
+            <View style={styles.imageContainer}>
+              {imageItems}
+            </View>
             <View style={styles.bench}>
               <TouchableOpacity
                 onPress={this.selectImage}
@@ -178,6 +200,14 @@ let styles = StyleSheet.create({
     marginBottom: 5,
     flexDirection: 'row',
     justifyContent: 'space-around'
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    marginBottom: 10,
+    marginTop: 10,
+    alignItems: 'center'
   }
 })
 

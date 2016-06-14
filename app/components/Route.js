@@ -21,12 +21,31 @@ let NavigationBarRouteMapper = {
             customText='Back'
            />
          );
+       case 'newItem':
+         return (
+           <BackButton
+            onPress={() => navigator.pop()}
+            customText='Back'
+           />
+         );
        default:
          return null;
      }
    },
    RightButton: function(route, navigator, index, navState) {
-
+     switch (route.name) {
+       case 'newItem':
+         return (
+           <BackButton
+            onPress={() => {
+              console.log('preview!');
+            }}
+            customText='Preview'
+           />
+         );
+       default:
+         return null;
+    }
    },
    Title: function(route, navigator, index, navState) {
 
